@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  discovery:
+    container_name: discovery
+    image: amsidhmicroservice/discovery-ws:latest
+    ports:
+      - 8010:8010
+    networks:
+      - person-microservice-network
+
+  gateway:
+    container_name: gateway
+    image: amsidhmicroservice/gateway-ws:latest
+    ports:
+      - 8080:8080
+    environment:
+      'eureka.client.service-url.defaultZone': 'http://discovery:8010/eureka'
+    networks:
+      - person-microservice-network
+
+  address-ws:
+    container_name: address-ws
+    image: amsidhmicroservice/address-ws:latest
+    environment:
+      'eureka.client.service-url.defaultZone': 'http://discovery:8010/eureka'
+    networks:
+      - person-microservice-network
+    volumes:
+      - type: bind
+        source: d:/microservice/person-micro-service/app-log
+        target: /app-log
+
+
+  person-ws:
+    container_name: person-ws
+    image: amsidhmicroservice/person-ws:latest
+    environment:
+      'eureka.client.service-url.defaultZone': 'http://discovery:8010/eureka'
+      'address-ws.user.addresses': 'http://address-ws/addresses/{personId}/person'
+    networks:
+      - person-microservice-network
+    volumes:
+      - type: bind
+        source: d:/microservice/person-micro-service/app-log
+        target: /app-log
+
+networks:
+  person-microservice-network:
+

@@ -9,20 +9,23 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.amsidh.mvc</groupId>
-    <artifactId>PersonMicroService</artifactId>
+    <artifactId>person-micro-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>PersonMicroService</name>
-    <description>PersonMicroService project for Spring Boot</description>
+    <name>person-micro-service</name>
+    <description>person-micro-service project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
+        <docker.image.prefix>amsidhmicroservice</docker.image.prefix>
+        <docker.image.name>${project.artifactId}</docker.image.name>
+        <docker.skip>true</docker.skip>
     </properties>
     <modules>
-        <module>Discovery</module>
-        <module>Gateway</module>
-        <module>Person-WS</module>
-        <module>Address-WS</module>
+        <module>discovery-ws</module>
+        <module>gateway-ws</module>
+        <module>person-ws</module>
+        <module>address-wS</module>
     </modules>
     <dependencies>
         <dependency>
@@ -85,7 +88,61 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.35.0</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>${docker.image.prefix}/${docker.image.name}</name>
+                            <alias>${project.name}</alias>
+                            <build>
+                                <!--copies artifact to docker build dir in target-->
+                                <assembly>
+                                    <descriptorRef>artifact-with-dependencies</descriptorRef>
+                                </assembly>
+                                <dockerFileDir>${project.basedir}</dockerFileDir>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>build-push</id>
+            <activation>
+                <file>
+                    <exists>Dockerfile</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>push-to-docker</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                    <!--<goal>push</goal>-->
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

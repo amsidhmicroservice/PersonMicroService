@@ -4,12 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.amsidh.mvc</groupId>
-        <artifactId>PersonMicroService</artifactId>
+        <artifactId>person-micro-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>Person-WS</artifactId>
-    <name>Person-WS</name>
-    <description>Person-WS project for Spring Boot</description>
+    <artifactId>person-ws</artifactId>
+    <name>person-ws</name>
+    <properties>
+        <docker.skip>false</docker.skip>
+    </properties>
+    <description>person-ws project for Spring Boot</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
